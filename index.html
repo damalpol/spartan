@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spartan Capital - Coming Soon</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial', sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            overflow: hidden;
+        }
+
+        /* Message Above Logo */
+        .top-message {
+            color: #ffffff;
+            font-size: 1.2rem;
+            font-weight: 200;
+            letter-spacing: 1px;
+            text-align: center;
+            margin-bottom: 20px;
+            opacity: 0;
+            animation: fadeIn 1.2s ease-in-out forwards;
+        }
+
+        /* Logo Container */
+        .logo-container {
+            text-align: center;
+            opacity: 0;
+            animation: fadeIn 1.5s ease-in-out forwards;
+        }
+
+        .logo-container img {
+            max-width: 400px;
+            width: 80%;
+            height: auto;
+            filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.2)); /* Added subtle shadow */
+        }
+
+        /* Coming Soon Message */
+        .coming-soon {
+            position: absolute;
+            bottom: 140px;
+            color: #ffffff;
+            font-size: 1.5rem;
+            font-weight: 300;
+            letter-spacing: 2px;
+            opacity: 0;
+            animation: fadeIn 2s ease-in-out 0.5s forwards;
+            text-align: center;
+            line-height: 2rem;
+        }
+
+        /* Fade-in Animation */
+        @keyframes fadeIn {
+            0% {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .top-message {
+                font-size: 1.5rem;
+                margin-bottom: 15px;
+            }
+
+            .logo-container img {
+                max-width: 300px;
+            }
+
+            .coming-soon {
+                font-size: 1.2rem;
+                bottom: 100px;
+                line-height: 1.8rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .top-message {
+                font-size: 1.2rem;
+                margin-bottom: 10px;
+            }
+
+            .logo-container img {
+                max-width: 250px;
+            }
+
+            .coming-soon {
+                font-size: 1rem;
+                bottom: 80px;
+                line-height: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="top-message">
+        Enjoy 3%-5% monthly secured by Smart Contract
+    </div>
+    <div class="logo-container">
+        <img src="./logo.jpg" alt="Spartan Capital Logo">
+    </div>
+    <div class="coming-soon">
+        Crypto Fund Investments<br>Coming Soon
+    </div>
+
+    <script>
+        // Optional: Add a subtle hover effect on the logo
+        const logo = document.querySelector('.logo-container img');
+        logo.addEventListener('mouseover', () => {
+            logo.style.transform = 'scale(1.05)';
+            logo.style.transition = 'transform 0.3s ease';
+        });
+
+        logo.addEventListener('mouseout', () => {
+            logo.style.transform = 'scale(1)';
+        });
+    </script>
+</body>
+</html>
