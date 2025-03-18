@@ -3,135 +3,189 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Spartan Capital - Coming Soon</title>
+    <title>Financial Data Chart</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Arial', sans-serif;
+        canvas {
+            width: 540px !important;
+            height: 380px !important;
+            margin: 20px auto;
+            display: block;
         }
-
         body {
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
-            overflow: hidden;
+            font-family: Arial, sans-serif;
+            padding: 20px;
         }
-
-        /* Message Above Logo */
-        .top-message {
-            color: #ffffff;
-            font-size: 1.2rem;
-            font-weight: 200;
-            letter-spacing: 1px;
+        #loading, #error {
+            text-align: center;
+            display: none;
+        }
+        #error { color: red; }
+        #lastUpdated {
+            text-align: center;
+            font-size: 0.9em;
+            color: #666;
+        }
+        .header-container {
             text-align: center;
             margin-bottom: 20px;
-            opacity: 0;
-            animation: fadeIn 1.2s ease-in-out forwards;
         }
-
-        /* Logo Container */
-        .logo-container {
-            text-align: center;
-            opacity: 0;
-            animation: fadeIn 1.5s ease-in-out forwards;
+        .logo {
+            width: 120px;
+            height: 100px;
+            background: #ccc;
+            margin: 0 auto 10px;
+            border-radius: 50%;
         }
-
-        .logo-container img {
-            max-width: 400px;
-            width: 80%;
-            height: auto;
-            filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.2)); /* Added subtle shadow */
-        }
-
-        /* Coming Soon Message */
-        .coming-soon {
-            position: absolute;
-            bottom: 140px;
-            color: #ffffff;
-            font-size: 1.5rem;
-            font-weight: 300;
-            letter-spacing: 2px;
-            opacity: 0;
-            animation: fadeIn 2s ease-in-out 0.5s forwards;
-            text-align: center;
-            line-height: 2rem;
-        }
-
-        /* Fade-in Animation */
-        @keyframes fadeIn {
-            0% {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            100% {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        /* Responsive Design */
-        @media (max-width: 768px) {
-            .top-message {
-                font-size: 1.5rem;
-                margin-bottom: 15px;
-            }
-
-            .logo-container img {
-                max-width: 300px;
-            }
-
-            .coming-soon {
-                font-size: 1.2rem;
-                bottom: 100px;
-                line-height: 1.8rem;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .top-message {
-                font-size: 1.2rem;
-                margin-bottom: 10px;
-            }
-
-            .logo-container img {
-                max-width: 250px;
-            }
-
-            .coming-soon {
-                font-size: 1rem;
-                bottom: 80px;
-                line-height: 1.5rem;
-            }
+        .company-name {
+            font-size: 24px;
+            font-weight: bold;
+            color: #333;
         }
     </style>
 </head>
 <body>
-    <div class="top-message">
-        Enjoy 3%-5% monthly secured by Smart Contract
+    <div class="header-container">
+        <div class="logo">
+            <!-- Replace this div with your logo image -->
+            <img src="./logo.jpg" alt="Spartan Crypto Investments Logo" style="width:100%;height:100%;border-radius:50%;"> 
+        </div>
+        <div class="company-name">Spartan Crypto Investments</div>
     </div>
-    <div class="logo-container">
-        <img src="./logo.jpg" alt="Spartan Capital Logo">
-    </div>
-    <div class="coming-soon">
-        Crypto Fund Investments<br>Coming Soon
-    </div>
+   
+    <div id="loading">Loading data...</div>
+    <div id="error"></div>
+    <div id="lastUpdated"></div>
+    <canvas id="financialChart"></canvas>
 
     <script>
-        // Optional: Add a subtle hover effect on the logo
-        const logo = document.querySelector('.logo-container img');
-        logo.addEventListener('mouseover', () => {
-            logo.style.transform = 'scale(1.05)';
-            logo.style.transition = 'transform 0.3s ease';
-        });
+        const loadingDiv = document.getElementById('loading');
+        const errorDiv = document.getElementById('error');
+        const lastUpdatedDiv = document.getElementById('lastUpdated');
+        let chart = null;
 
-        logo.addEventListener('mouseout', () => {
-            logo.style.transform = 'scale(1)';
-        });
+        // npx http-server
+        // Function to fetch and update chart
+        function updateChart() {
+            loadingDiv.style.display = 'block';
+            errorDiv.style.display = 'none';
+
+            const url = `./data.json?nocache=${new Date().getTime()}`;
+            fetch(url)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status} - ${response.statusText}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    loadingDiv.style.display = 'none';
+                    
+                    // Extract year and process dates
+                    const year = data[0].date.split('-')[0];
+                    const dates = data.map(item => {
+                        const [_, month, day] = item.date.split('-');
+                        return `${month}-${day}`;
+                    });
+                    const amounts = data.map(item => item.amount);
+                    const yields = data.map(item => item.yield);
+                    // Calculate yield percentage for tooltip (not chart)
+                    const yieldPercentages = data.map(item => 
+                        item.amount !== 0 ? (item.yield / item.amount * 100).toFixed(2) : 0
+                    );
+
+                    if (!chart) {
+                        // Create chart if it doesn't exist
+                        const ctx = document.getElementById('financialChart').getContext('2d');
+                        chart = new Chart(ctx, {
+                            type: 'line',
+                            data: {
+                                labels: dates,
+                                datasets: [
+                                    {
+                                        label: 'Amount ($)',
+                                        data: amounts,
+                                        borderColor: 'rgb(75, 192, 192)',
+                                        tension: 0.1,
+                                        yAxisID: 'y'
+                                    },
+                                    {
+                                        label: 'Yield ($)',
+                                        data: yields,
+                                        borderColor: 'rgb(255, 99, 132)',
+                                        tension: 0.1,
+                                        yAxisID: 'y'
+                                    }
+                                ]
+                            },
+                            options: {
+                                responsive: false,
+                                maintainAspectRatio: false,
+                                plugins: {
+                                    title: {
+                                        display: true,
+                                        text: `Financial Data - ${year}`,
+                                        font: { size: 20 }
+                                    },
+                                    legend: { position: 'top' },
+                                    tooltip: {
+                                        mode: 'index',
+                                        intersect: false,
+                                        callbacks: {
+                                            label: function(context) {
+                                                let label = context.dataset.label || '';
+                                                if (label) {
+                                                    label += ': $' + context.parsed.y;
+                                                }
+                                                return label;
+                                            }
+                                        }
+                                    }
+                                },
+                                scales: {
+                                    x: { 
+                                        title: { display: true, text: 'Month-Day' } 
+                                    },
+                                    y: { 
+                                        type: 'linear',
+                                        position: 'left',
+                                        title: { display: true, text: 'Amount / Yield ($)' },
+                                        beginAtZero: true
+                                    }
+                                }
+                            }
+                        });
+                    } else {
+                        // Update existing chart
+                        chart.data.labels = dates;
+                        chart.data.datasets[0].data = amounts;
+                        chart.data.datasets[1].data = yields;
+                        chart.options.plugins.title.text = `Financial Data - ${year}`;
+                        chart.options.plugins.tooltip.callbacks.afterLabel = function(context) {
+                            const index = context.dataIndex;
+                            return `Yield %: ${yieldPercentages[index]}%`;
+                        };
+                        chart.update();
+                    }
+
+                    lastUpdatedDiv.textContent = `Last updated: ${new Date().toLocaleTimeString()} - Data points: ${data.length}`;
+                    console.log('Data loaded:', data);
+                    console.log('Yield Percentages:', yieldPercentages);
+                })
+                .catch(error => {
+                    loadingDiv.style.display = 'none';
+                    errorDiv.style.display = 'block';
+                    errorDiv.innerHTML = `Error loading data: ${error.message}<br>
+                        Check server, file path, and JSON validity`;
+                    console.error('Fetch error:', error);
+                });
+        }
+
+        // Initial load
+        updateChart();
+
+        // Poll every 5 seconds
+        setInterval(updateChart, 10000); //10 seconds
     </script>
 </body>
 </html>
