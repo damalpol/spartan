@@ -162,7 +162,7 @@
                     } else {
                         // Update existing chart
                         chart.data.labels = dates;
-                        chart.data.datasets[0].data = amounts;
+                        chart.data.datasets[0].data = pnl;
                         chart.data.datasets[1].data = yields;
                         chart.options.plugins.title.text = `Financial Data - ${year}`;
                         chart.options.plugins.tooltip.callbacks.afterLabel = function(context) {
