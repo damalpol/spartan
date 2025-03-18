@@ -94,6 +94,10 @@
                         item.amount !== 0 ? (item.yield / item.amount * 100).toFixed(2) : 0
                     );
 
+                     const pnl = data.map(item => 
+                        item.amount !== 0 ? (item.yield + item.amount).toFixed(2) : 0
+                    );
+
                     if (!chart) {
                         // Create chart if it doesn't exist
                         const ctx = document.getElementById('financialChart').getContext('2d');
@@ -104,7 +108,7 @@
                                 datasets: [
                                     {
                                         label: 'Amount ($)',
-                                        data: amounts,
+                                        data: pnl,
                                         borderColor: 'rgb(75, 192, 192)',
                                         tension: 0.1,
                                         yAxisID: 'y'
