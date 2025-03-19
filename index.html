@@ -78,6 +78,45 @@
             font-size: 0.9em;
         }
 
+        #cta {
+            margin-top: 10px;
+            font-size: 1.1em;
+            font-weight: 600;
+            color: #27ae60;
+        }
+
+        .join-button {
+            display: inline-block;
+            margin-top: 8px;
+            padding: 10px 20px;
+            font-size: 1em;
+            font-weight: 600;
+            color: white;
+            background: #27ae60;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            text-decoration: none;
+            transition: background 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .join-button:hover {
+            background: #219653;
+            transform: scale(1.05);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .join-button:active {
+            transform: scale(0.98);
+        }
+
+        #remark {
+            margin-top: 8px;
+            font-size: 0.95em;
+            color: #34495e;
+            font-style: italic;
+        }
+
         .chart-card {
             opacity: 0;
             animation: fadeIn 0.5s ease forwards;
@@ -115,6 +154,15 @@
             .chart-container {
                 height: 50vh;
             }
+
+            #cta {
+                font-size: 1em;
+            }
+
+            .join-button {
+                padding: 8px 16px;
+                font-size: 0.9em;
+            }
         }
     </style>
 </head>
@@ -131,6 +179,9 @@
             <div id="loading" style="display: none;">Loading data...</div>
             <div id="error" style="display: none;"></div>
             <div id="lastUpdated"></div>
+            <div id="cta"></div>
+            <a id="joinButton" class="join-button" href="#">Join Now</a>
+            <div id="remark"></div>
         </div>
 
         <div class="card chart-card">
@@ -144,6 +195,9 @@
         const loadingDiv = document.getElementById('loading');
         const errorDiv = document.getElementById('error');
         const lastUpdatedDiv = document.getElementById('lastUpdated');
+        const ctaDiv = document.getElementById('cta');
+        const joinButton = document.getElementById('joinButton');
+        const remarkDiv = document.getElementById('remark');
         let chart = null;
 
         function calculateEstimatedReturns(data) {
@@ -158,6 +212,27 @@
                 thirtyDay: (avgDailyYield * 30).toFixed(2),
                 yearly: (avgDailyYield * 365).toFixed(2)
             };
+        }
+
+        function getCallToActionAndRemark(thirtyDay, yearly) {
+            const yearlyFloat = parseFloat(yearly);
+            let cta, remark;
+
+            if (yearlyFloat > 50) {
+                cta = `Join for ${thirtyDay}% in 30 days and ${yearly}% yearly returns!`;
+                remark = "Outstanding performance—don’t miss out on this opportunity!";
+            } else if (yearlyFloat > 20) {
+                cta = `Invest today for ${thirtyDay}% in 30 days and ${yearly}% yearly growth!`;
+                remark = "Solid returns to fuel your financial goals.";
+            } else if (yearlyFloat > 0) {
+                cta = `Start now with ${thirtyDay}% in 30 days and ${yearly}% yearly gains!`;
+                remark = "A promising start to building your wealth.";
+            } else {
+                cta = "Explore your options with us today!";
+                remark = "Let’s find the right strategy for you.";
+            }
+
+            return { cta, remark };
         }
 
         function updateChart() {
@@ -194,6 +269,7 @@
                     });
 
                     const { thirtyDay, yearly } = calculateEstimatedReturns(data);
+                    const { cta, remark } = getCallToActionAndRemark(thirtyDay, yearly);
 
                     if (!chart) {
                         const ctx = document.getElementById('financialChart').getContext('2d');
@@ -236,13 +312,13 @@
                                     title: {
                                         display: true,
                                         text: `Financial Data - ${year}`,
-                                        font: { size: 14 },
+                                        font: { size: 20, weight: 'bold' },
                                         color: '#2c3e50'
                                     },
                                     subtitle: {
                                         display: true,
                                         text: `Est. 30-Day Return: ${thirtyDay}% | Est. Yearly Return: ${yearly}%`,
-                                        font: { size: 20, weight: 'bold' },
+                                        font: { size: 14 },
                                         color: '#7f8c8d',
                                         padding: { top: 5 }
                                     },
@@ -329,10 +405,15 @@
                     }
 
                     lastUpdatedDiv.textContent = `Last updated: ${new Date().toLocaleTimeString()} - Data points: ${data.length}`;
+                    ctaDiv.textContent = cta;
+                    joinButton.href = "#"; // Replace with actual signup link if available
+                    remarkDiv.textContent = remark;
                     console.log('Data loaded:', data);
                     console.log('Yield Percentages:', yieldPercentages);
                     console.log('Estimated 30-Day Return:', thirtyDay + '%');
                     console.log('Estimated Yearly Return:', yearly + '%');
+                    console.log('CTA:', cta);
+                    console.log('Remark:', remark);
                 })
                 .catch(error => {
                     loadingDiv.style.display = 'none';
@@ -343,9 +424,8 @@
                 });
         }
 
-        // Initial load
+        // Initial load only (no interval)
         updateChart();
-        setInterval(updateChart, 10000);
     </script>
 </body>
 </html>
