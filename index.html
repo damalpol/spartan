@@ -6,16 +6,19 @@
     <title>Financial Data Chart</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        canvas {
-            width: 420px !important;
-            height: 400px !important;
-            margin: 10px auto;
-            display: block;
+        .chart-container {
+            position: relative;
+            margin: 20px auto;
+            height: 60vh;
+            width: 90vw;
+            max-width: 1000px;
         }
+        
         body {
             font-family: Arial, sans-serif;
             padding: 20px;
         }
+        
         #loading, #error {
             text-align: center;
             display: none;
@@ -23,9 +26,10 @@
         #error { color: red; }
         #lastUpdated {
             text-align: center;
-            font-size: 0.7em;
+            font-size: 0.9em;
             color: #666;
         }
+        
         .header-container {
             text-align: center;
             margin-bottom: 20px;
@@ -33,7 +37,6 @@
         .logo {
             width: 120px;
             height: 100px;
-            background: #ccc;
             margin: 0 auto 10px;
             border-radius: 50%;
         }
@@ -42,13 +45,26 @@
             font-weight: bold;
             color: #333;
         }
+        
+        @media (max-width: 600px) {
+            .chart-container {
+                height: 50vh;
+                width: 95vw;
+            }
+            .logo {
+                width: 80px;
+                height: 80px;
+            }
+            .company-name {
+                font-size: 18px;
+            }
+        }
     </style>
 </head>
 <body>
     <div class="header-container">
         <div class="logo">
-            <!-- Replace this div with your logo image -->
-            <img src="./logo.jpg" alt="Spartan Crypto Investments Logo" style="width:100%;height:100%;border-radius:50%;"> 
+            <img src="./logo.jpg" alt="Spartan Crypto Investments Logo" style="width:100%;height:100%;border-radius:50%;">
         </div>
         <div class="company-name">Spartan Crypto Investments</div>
     </div>
@@ -56,7 +72,9 @@
     <div id="loading">Loading data...</div>
     <div id="error"></div>
     <div id="lastUpdated"></div>
-    <canvas id="financialChart"></canvas>
+    <div class="chart-container">
+        <canvas id="financialChart"></canvas>
+    </div>
 
     <script>
         const loadingDiv = document.getElementById('loading');
@@ -64,8 +82,6 @@
         const lastUpdatedDiv = document.getElementById('lastUpdated');
         let chart = null;
 
-        // npx http-server
-        // Function to fetch and update chart
         function updateChart() {
             loadingDiv.style.display = 'block';
             errorDiv.style.display = 'none';
@@ -81,25 +97,28 @@
                 .then(data => {
                     loadingDiv.style.display = 'none';
                     
-                    // Extract year and process dates
+                    // Process data
                     const year = data[0].date.split('-')[0];
                     const dates = data.map(item => {
                         const [_, month, day] = item.date.split('-');
                         return `${month}-${day}`;
                     });
-                    const amounts = data.map(item => item.amount);
-                    const yields = data.map(item => item.yield);
-                    // Calculate yield percentage for tooltip (not chart)
+                    const amounts = data.map(item => Number(item.amount.toFixed(2)));
+                    const yields = data.map(item => Number(item.yield.toFixed(2)));
                     const yieldPercentages = data.map(item => 
-                        item.amount !== 0 ? (item.yield / item.amount * 100).toFixed(2) : 0
+                        item.amount !== 0 ? (item.yield / item.amount * 100).toFixed(2) : "0.00"
                     );
-
-                     const pnl = data.map(item => 
-                        item.amount !== 0 ? (item.yield + item.amount).toFixed(2) : 0
-                    );
+                    
+                    // Calculate total yield earned
+                    const totalYields = [];
+                    let cumulativeYield = 0;
+                    data.forEach(item => {
+                        cumulativeYield += item.yield;
+                        totalYields.push(Number(cumulativeYield.toFixed(2)));
+                    });
 
                     if (!chart) {
-                        // Create chart if it doesn't exist
+                        // Create chart
                         const ctx = document.getElementById('financialChart').getContext('2d');
                         chart = new Chart(ctx, {
                             type: 'line',
@@ -108,23 +127,34 @@
                                 datasets: [
                                     {
                                         label: 'Amount ($)',
-                                        data: pnl,
+                                        data: amounts,
                                         borderColor: 'rgb(75, 192, 192)',
                                         tension: 0.1,
                                         yAxisID: 'y'
                                     },
                                     {
-                                        label: 'Yield ($)',
+                                        label: 'Daily Yield ($)',
                                         data: yields,
                                         borderColor: 'rgb(255, 99, 132)',
                                         tension: 0.1,
-                                        yAxisID: 'y'
+                                        yAxisID: 'y1'
+                                    },
+                                    {
+                                        label: 'Total Yield Earned ($)',
+                                        data: totalYields,
+                                        borderColor: 'rgb(54, 162, 235)',
+                                        tension: 0.1,
+                                        yAxisID: 'y1'
                                     }
                                 ]
                             },
                             options: {
-                                responsive: false,
+                                responsive: true,
                                 maintainAspectRatio: false,
+                                interaction: {
+                                    mode: 'index',
+                                    intersect: false,
+                                },
                                 plugins: {
                                     title: {
                                         display: true,
@@ -139,9 +169,15 @@
                                             label: function(context) {
                                                 let label = context.dataset.label || '';
                                                 if (label) {
-                                                    label += ': $' + context.parsed.y;
+                                                    label += ': $' + context.parsed.y.toFixed(2);
                                                 }
                                                 return label;
+                                            },
+                                            afterLabel: function(context) {
+                                                if (context.dataset.label === 'Daily Yield ($)') {
+                                                    const index = context.dataIndex;
+                                                    return `Yield %: ${yieldPercentages[index]}%`;
+                                                }
                                             }
                                         }
                                     }
@@ -153,8 +189,25 @@
                                     y: { 
                                         type: 'linear',
                                         position: 'left',
-                                        title: { display: true, text: 'Amount / Yield ($)' },
-                                        beginAtZero: true
+                                        title: { display: true, text: 'Amount ($)' },
+                                        beginAtZero: true,
+                                        ticks: {
+                                            callback: function(value) {
+                                                return '$' + value.toFixed(2);
+                                            }
+                                        }
+                                    },
+                                    y1: {
+                                        type: 'linear',
+                                        position: 'right',
+                                        title: { display: true, text: 'Yield ($)' },
+                                        beginAtZero: true,
+                                        grid: { drawOnChartArea: false },
+                                        ticks: {
+                                            callback: function(value) {
+                                                return '$' + value.toFixed(2);
+                                            }
+                                        }
                                     }
                                 }
                             }
@@ -162,13 +215,10 @@
                     } else {
                         // Update existing chart
                         chart.data.labels = dates;
-                        chart.data.datasets[0].data = pnl;
+                        chart.data.datasets[0].data = amounts;
                         chart.data.datasets[1].data = yields;
+                        chart.data.datasets[2].data = totalYields;
                         chart.options.plugins.title.text = `Financial Data - ${year}`;
-                        chart.options.plugins.tooltip.callbacks.afterLabel = function(context) {
-                            const index = context.dataIndex;
-                            return `Yield %: ${yieldPercentages[index]}%`;
-                        };
                         chart.update();
                     }
 
@@ -187,9 +237,7 @@
 
         // Initial load
         updateChart();
-
-        // Poll every 5 seconds
-        setInterval(updateChart, 10000); //10 seconds
+        setInterval(updateChart, 10000);
     </script>
 </body>
 </html>
