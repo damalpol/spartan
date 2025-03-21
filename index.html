@@ -310,7 +310,8 @@
                                     },
                                     subtitle: {
                                         display: true,
-                                        text: `Est. 30-Day Return: ${thirtyDay}% | Est. Yearly Return: ${yearly}%`,
+                                       // text: `Est. 30-Day Return: ${thirtyDay}% | Est. Yearly Return: ${yearly}%`,
+                                        text: '',
                                         font: { size: 14 },
                                         color: '#7f8c8d',
                                         padding: { top: 5 }
@@ -392,7 +393,8 @@
                         chart.data.datasets[0].data = amounts;
                         chart.data.datasets[1].data = yields;
                         chart.options.plugins.title.text = `Financial Data - ${year}`;
-                        chart.options.plugins.subtitle.text = `Est. 30-Day Return: ${thirtyDay}% | Est. Yearly Return: ${yearly}%`;
+                        //chart.options.plugins.subtitle.text = `Est. 30-Day Return: ${thirtyDay}% | Est. Yearly Return: ${yearly}%`;
+                        chart.options.plugins.subtitle.text = '';
                         chart.update();
                     }
 
