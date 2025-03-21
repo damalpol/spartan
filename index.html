@@ -291,13 +291,6 @@
                                         borderColor: 'rgb(255, 99, 132)',
                                         tension: 0.1,
                                         yAxisID: 'y1'
-                                    },
-                                    {
-                                        label: 'Total Yield Earned ($)',
-                                        data: totalYields,
-                                        borderColor: 'rgb(54, 162, 235)',
-                                        tension: 0.1,
-                                        yAxisID: 'y1'
                                     }
                                 ]
                             },
@@ -398,7 +391,6 @@
                         chart.data.labels = dates;
                         chart.data.datasets[0].data = amounts;
                         chart.data.datasets[1].data = yields;
-                        chart.data.datasets[2].data = totalYields;
                         chart.options.plugins.title.text = `Financial Data - ${year}`;
                         chart.options.plugins.subtitle.text = `Est. 30-Day Return: ${thirtyDay}% | Est. Yearly Return: ${yearly}%`;
                         chart.update();
