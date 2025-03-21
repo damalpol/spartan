@@ -264,7 +264,7 @@
                     const totalYields = [];
                     let cumulativeYield = 0;
                     data.forEach(item => {
-                        cumulativeYield += item.yield;
+                        cumulativeYield += (item.amount+item.yield);
                         totalYields.push(Number(cumulativeYield.toFixed(2)));
                     });
 
@@ -287,7 +287,7 @@
                                     },
                                     {
                                         label: 'Daily Yield ($)',
-                                        data: yields,
+                                        data: totalYields,
                                         borderColor: 'rgb(255, 99, 132)',
                                         tension: 0.1,
                                         yAxisID: 'y1'
