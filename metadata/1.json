@@ -1,4 +1,18 @@
 {
-  "name": "Archimedes DAO",
-  "image": "https://spartan-blue.vercel.app/logo.jpg"
+  "title": "Asset Metadata",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Archimedes DAO"
+    },
+    "description": {
+      "type": "string",
+      "description": "Archimedes DAO"
+    },
+    "image": {
+      "type": "string",
+      "description": "https://spartan-blue.vercel.app/logo.jpg"
+    }
+  }
 }
