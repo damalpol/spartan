@@ -1,18 +1,20 @@
 {
-  "title": "Asset Metadata",
-  "type": "object",
-  "properties": {
-    "name": {
-      "type": "string",
-      "description": "Archimedes DAO"
-    },
-    "description": {
-      "type": "string",
-      "description": "Archimedes DAO"
-    },
-    "image": {
-      "type": "string",
-      "description": "https://spartan-blue.vercel.app/logo.jpg"
+  "description": "Vervana is a 5-star exclusive hotel-condo located in Playa Venao in the Los Santos province of Panama. With a signature design that embraces the tranquility of the forest and the Pacific Ocean, these exclusive homes ensure their residents enjoy a peaceful and laid-back experience.", 
+  "external_url": "https://archimedes-rwa.vercel.app/", 
+  "image": "https://spartan-blue.vercel.app/images/real1.jpg", 
+  "name": "real1",
+  "attributes": [
+    {
+      "trait_type": "place", 
+      "value": "Panama"
+    }, 
+    {
+      "trait_type": "price", 
+      "value": "1200000"
+    }, 
+    {
+      "trait_type": "type", 
+      "value": "luxury Hotel"
     }
-  }
+  ]
 }
