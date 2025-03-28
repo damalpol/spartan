@@ -1,5 +1,5 @@
 [
   { "erc20 token address": "0xf2BABBC04f3EcADf2e8D3c4796F1AFD3AC125883", "rate conversion": 1.0 },
   { "erc20 token address": "0x53378B2b5f145BB3d431Fb4BAf1105d688B319C1", "rate conversion": 0.0 },
-  { "erc20 token address": "0xfc5F08F2E7C68a5ad529b15DC18C3554480b47eC", "rate conversion": 200000.0, "tokenid":3 }
+  { "erc20 token address": "0xfc5F08F2E7C68a5ad529b15DC18C3554480b47eC", "rate conversion": 100000.0, "tokenid":3 }
 ]
