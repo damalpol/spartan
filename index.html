@@ -144,7 +144,7 @@
 
             .logo {
                 width: 80px;
-                height: 80px;
+                height: 120px;
             }
 
             .company-name {
@@ -170,7 +170,7 @@
     <div class="container">
         <div class="card header-card">
             <div class="logo">
-                <img src="./logo.jpg" alt="Spartan Crypto Investments Logo" style="width:100%;height:100%;">
+                <img src="./logo.jpg" alt="Spartan Crypto Investments Logo" style="width:100%;height:80%;">
             </div>
             <h1 class="company-name">Spartan Crypto Investments</h1>
         </div>
@@ -239,7 +239,7 @@
             loadingDiv.style.display = 'block';
             errorDiv.style.display = 'none';
 
-            const url = `./data.json?nocache=${new Date().getTime()}`;
+            const url = `https://spartan-blue.vercel.app/data.json?nocache=${new Date().getTime()}`;
             fetch(url)
                 .then(response => {
                     if (!response.ok) {
@@ -258,13 +258,13 @@
                     const amounts = data.map(item => Number(item.amount.toFixed(2)));
                     const yields = data.map(item => Number(item.yield.toFixed(2)));
                     const yieldPercentages = data.map(item => 
-                        item.amount !== 0 ? (item.yield / item.amount * 100).toFixed(2) : "0.00"
+                        item.amount !== 0 ? (item.yield).toFixed(2) : "0.00"
                     );
                     
                     const totalYields = [];
                     let cumulativeYield = 0;
                     data.forEach(item => {
-                        cumulativeYield = (item.amount+item.yield);
+                        cumulativeYield = (item.yield);
                         totalYields.push(Number(cumulativeYield.toFixed(2)));
                     });
 
@@ -279,7 +279,7 @@
                                 labels: dates,
                                 datasets: [
                                     {
-                                        label: 'Deposit ($)',
+                                        label: 'Net Value ($)',
                                         data: amounts,
                                         borderColor: 'rgb(75, 192, 192)',
                                         tension: 0.1,
@@ -330,12 +330,6 @@
                                                     label += ': $' + context.parsed.y.toFixed(2);
                                                 }
                                                 return label;
-                                            },
-                                            afterLabel: function(context) {
-                                                if (context.dataset.label === 'Daily Yield ($)') {
-                                                    const index = context.dataIndex;
-                                                    return `Yield %: ${yieldPercentages[index]}%`;
-                                                }
                                             }
                                         }
                                     }
