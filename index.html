@@ -271,7 +271,7 @@
                     const totalYields = [];
                     let cumulativeYield = 0;
                     data.forEach(item => {
-                        cumulativeYield = (item.yield);
+                        cumulativeYield = cumulativeYield + Number(item.yield);
                         totalYields.push(Number(cumulativeYield.toFixed(2)));
                     });
 
@@ -449,7 +449,7 @@
                     const totalYields = [];
                     let cumulativeYield = 0;
                     data.forEach(item => {
-                        cumulativeYield = (item.yield);
+                        cumulativeYield = cumulativeYield + Number(item.yield);
                         totalYields.push(Number(cumulativeYield.toFixed(2)));
                     });
 
