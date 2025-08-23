@@ -228,6 +228,30 @@
             };
         }
 
+
+function calculateBTCReturns(data) {
+    // Validate input
+    if (!Array.isArray(data)) {
+        throw new Error('Input must be an array');
+    }
+    if (data.length === 0) {
+        return { usdDifference: 0, percentageGrowth: 0 };
+    }
+  
+    // Calculate USD difference and percentage growth
+    const firstAmount = data[0].amount;
+    const lastAmount = data[data.length - 1].amount;
+    const usdDifference = lastAmount - firstAmount;
+    const percentageGrowth = firstAmount !== 0 ? ((lastAmount - firstAmount) / firstAmount * 100) : 0;
+
+
+    return {
+        usd: Number(usdDifference).toFixed(2),
+        percentage: Number(percentageGrowth).toFixed(2)
+        
+    };
+}
+
         function getCallToActionAndRemark(thirtyDay, yearly) {
             const yearlyFloat = parseFloat(yearly);
             let cta, remark;
@@ -628,18 +652,12 @@
                     const yields = data.map(item => Number(item.yield.toFixed(2)));
                     const yieldPercentages = data.map(item => 
                         item.amount !== 0 ? (item.yield).toFixed(2) : "0.00"
-                    );
-                    
-                    const totalYields = [];
-                    let cumulativeYield = 0;
-                    data.forEach(item => {
-                        cumulativeYield = cumulativeYield + Number(item.yield);
-                        totalYields.push(Number(cumulativeYield.toFixed(2)));
-                    });
+                    );                    
 
-                    const { thirtyDay, yearly } = calculateEstimatedReturns(data);
-                    const { cta, remark } = getCallToActionAndRemark(thirtyDay, yearly);
-		    chart3 = null;	
+                    const { usd, percentage } = calculateBTCReturns(data);
+
+
+                    chart3 = null;	
 
                     if (!chart3) {
                         const ctx = document.getElementById('financialChart3').getContext('2d');
@@ -657,7 +675,7 @@
                                     },
                                     {
                                         label: 'Daily Yield ($)',
-                                        data: totalYields,
+                                        data: 0,
                                         borderColor: 'rgb(255, 99, 132)',
                                         tension: 0.1,
                                         yAxisID: 'y1'
@@ -680,7 +698,7 @@
                                     },
                                     subtitle: {
                                         display: true,
-                                        text: `Est. 30-Day Return: ${thirtyDay}% | Est. Yearly Return: ${yearly}%`,
+                                        text: `Revenue:$ ${usd} | growth: ${percentage} %`,
                                         font: { size: 14 },
                                         color: '#7f8c8d',
                                         padding: { top: 5 }
@@ -756,7 +774,6 @@
                         chart3.data.datasets[0].data = amounts;
                         chart3.data.datasets[1].data = yields;
                         chart3.options.plugins.title.text = `conservative2 - ${year}`;
-                        //chart.options.plugins.subtitle.text = `Est. 30-Day Return: ${thirtyDay}% | Est. Yearly Return: ${yearly}%`;
                         chart3.options.plugins.subtitle.text = '';
                         chart3.update();
                     }
@@ -767,10 +784,9 @@
                     remarkDiv.textContent = remark;
                     console.log('Data loaded:', data);
                     console.log('Yield Percentages:', yieldPercentages);
-                    console.log('Estimated 30-Day Return:', thirtyDay + '%');
-                    console.log('Estimated Yearly Return:', yearly + '%');
-                    console.log('CTA:', cta);
-                    console.log('Remark:', remark);
+                    console.log('Revenue:', usd + '$');
+                    console.log('Revenue:', growth + '%');
+                    
                 })
                 .catch(error => {
                     loadingDiv.style.display = 'none';
