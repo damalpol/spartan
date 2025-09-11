@@ -201,6 +201,12 @@
             </div>
 
         </div>
+        <div class="card chart-card">
+            <div class="chart-container">
+                <canvas id="financialChart4"></canvas>
+            </div>
+
+        </div>
 
 
     </div>
@@ -785,8 +791,180 @@ function calculateBTCReturns(data) {
                     console.log('Data loaded:', data);
                     console.log('Yield Percentages:', yieldPercentages);
                     console.log('Revenue:', usd + '$');
-                    console.log('Revenue:', growth + '%');
                     
+                    
+                })
+                .catch(error => {
+                    loadingDiv.style.display = 'none';
+                    errorDiv.style.display = 'block';
+                    errorDiv.innerHTML = `Error loading data: ${error.message}<br>
+                        Check server, file path, and JSON validity`;
+                    console.error('Fetch error:', error);
+                });
+        }
+
+
+
+
+
+        function updateChart4() {
+            loadingDiv.style.display = 'block';
+            errorDiv.style.display = 'none';
+
+            const url = `https://spartan-blue.vercel.app/yield.json?nocache=${new Date().getTime()}`;
+            fetch(url)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status} - ${response.statusText}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    loadingDiv.style.display = 'none';
+                    
+                    const year = data[0].date.split('-')[0];
+                    const dates = data.map(item => {
+                        const [_, month, day] = item.date.split('-');
+                        return `${month}-${day}`;
+                    });
+                    const amounts = data.map(item => Number(item.amount.toFixed(2)));
+                    const yields = data.map(item => Number(item.yield.toFixed(2)));
+                    const yieldPercentages = data.map(item => 
+                        item.amount !== 0 ? (item.yield).toFixed(2) : "0.00"
+                    );                    
+
+                    const { usd, percentage } = calculateBTCReturns(data);
+
+
+                    chart4 = null;	
+
+                    if (!chart4) {
+                        const ctx = document.getElementById('financialChart4').getContext('2d');
+                        chart4 = new Chart(ctx, {
+                            type: 'line',
+                            data: {
+                                labels: dates,
+                                datasets: [
+                                    {
+                                        label: 'Net Value ($)',
+                                        data: 0,
+                                        borderColor: 'rgb(75, 192, 192)',
+                                        tension: 0.1,
+                                        yAxisID: 'y'
+                                    },
+                                    {
+                                        label: 'Daily Yield ($)',
+                                        data: yields,
+                                        borderColor: 'rgb(255, 99, 132)',
+                                        tension: 0.1,
+                                        yAxisID: 'y1'
+                                    }
+                                ]
+                            },
+                            options: {
+                                responsive: true,
+                                maintainAspectRatio: false,
+                                interaction: {
+                                    mode: 'index',
+                                    intersect: false,
+                                },
+                                plugins: {
+                                    title: {
+                                        display: true,
+                                        text: `Yield (USDC) - ${year}`,
+                                        font: { size: 20, weight: 'bold' },
+                                        color: '#2c3e50'
+                                    },
+                                    subtitle: {
+                                        display: true,
+                                        text: `Revenue:$ ${usd} | growth: ${percentage} %`,
+                                        font: { size: 14 },
+                                        color: '#7f8c8d',
+                                        padding: { top: 5 }
+                                    },
+                                    legend: { 
+                                        position: 'top',
+                                        labels: { font: { size: 12 }, color: '#34495e' }
+                                    },
+                                    tooltip: {
+                                        mode: 'index',
+                                        intersect: false,
+                                        callbacks: {
+                                            label: function(context) {
+                                                let label = context.dataset.label || '';
+                                                if (label) {
+                                                    label += ': $' + context.parsed.y.toFixed(2);
+                                                }
+                                                return label;
+                                            }
+                                        }
+                                    }
+                                },
+                                scales: {
+                                    x: { 
+                                        title: { 
+                                            display: true, 
+                                            text: 'Month-Day', 
+                                            color: '#34495e',
+                                            font: { size: 14 }
+                                        },
+                                        ticks: { color: '#34495e' }
+                                    },
+                                    y: { 
+                                        type: 'linear',
+                                        position: 'left',
+                                        title: { 
+                                            display: true, 
+                                            text: 'Amount ($)', 
+                                            color: '#34495e',
+                                            font: { size: 14 }
+                                        },
+                                        beginAtZero: true,
+                                        ticks: {
+                                            color: '#34495e',
+                                            callback: function(value) {
+                                                return '$' + value.toFixed(2);
+                                            }
+                                        }
+                                    },
+                                    y1: {
+                                        type: 'linear',
+                                        position: 'right',
+                                        title: { 
+                                            display: true, 
+                                            text: 'Yield ($)', 
+                                            color: '#34495e',
+                                            font: { size: 14 }
+                                        },
+                                        beginAtZero: true,
+                                        grid: { drawOnChartArea: false },
+                                        ticks: {
+                                            color: '#34495e',
+                                            callback: function(value) {
+                                                return '$' + value.toFixed(2);
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        });
+                    } else {
+                        chart4.data.labels = dates;
+                        chart4.data.datasets[0].data = amounts;
+                        chart4.data.datasets[1].data = yields;
+                        chart4.options.plugins.title.text = `conservative2 - ${year}`;
+                        chart4.options.plugins.subtitle.text = '';
+                        chart4.update();
+                    }
+
+                    lastUpdatedDiv.textContent = `Last updated: ${new Date().toLocaleTimeString()} - Data points: ${data.length}`;
+                   // ctaDiv.textContent = cta;
+                    joinButton.href = "#"; // Replace with actual signup link if available
+                    remarkDiv.textContent = remark;
+                    console.log('Data loaded:', data);
+                    console.log('Yield Percentages:', yieldPercentages);
+                    console.log('Revenue:', usd + '$');
+                                        
                 })
                 .catch(error => {
                     loadingDiv.style.display = 'none';
@@ -803,6 +981,7 @@ function calculateBTCReturns(data) {
         updateChart();
         updateChart2();
         updateChart3();
+        updateChart4();
     </script>
 </body>
 </html>
