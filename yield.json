@@ -12,5 +12,6 @@
     { "date": "2025-09-21", "amount": 0, "yield": 46.78 },
     { "date": "2025-09-22", "amount": 0, "yield": 47.09 },
     { "date": "2025-09-23", "amount": 0, "yield": 50.71 },
-    { "date": "2025-09-24", "amount": 0, "yield": 54.05 }
+    { "date": "2025-09-24", "amount": 0, "yield": 54.05 },
+    { "date": "2025-09-25", "amount": 0, "yield": 55.48 }
 ]
