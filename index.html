@@ -989,7 +989,7 @@ function calculateBTCReturns(data) {
             loadingDiv.style.display = 'block';
             errorDiv.style.display = 'none';
 
-            const url = `https://spartan-blue.vercel.app/btc.json?nocache=${new Date().getTime()}`;
+            const url = `https://spartan-blue.vercel.app/btc2.json?nocache=${new Date().getTime()}`;
             fetch(url)
                 .then(response => {
                     if (!response.ok) {
@@ -1165,5 +1165,6 @@ function calculateBTCReturns(data) {
 </body>
 
 </html>
+
 
 
