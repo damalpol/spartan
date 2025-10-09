@@ -26,5 +26,6 @@
     { "date": "2025-10-05", "amount": 0, "yield": 13.49 },
     { "date": "2025-10-06", "amount": 0, "yield": 16.92 },
     { "date": "2025-10-07", "amount": 0, "yield": 20.76 },
-    { "date": "2025-10-08", "amount": 0, "yield": 23.48 }
+    { "date": "2025-10-08", "amount": 0, "yield": 23.48 },
+    { "date": "2025-10-09", "amount": 0, "yield": 26.38 }
 ]
