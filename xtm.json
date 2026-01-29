@@ -1,6 +1,7 @@
 [
     { "date": "2026-01-26", "amount": 3.34, "yield": 0 },
     { "date": "2026-01-27", "amount": 3.33, "yield": 0 },
-    { "date": "2026-01-28", "amount": 3.85, "yield": 0 }
+    { "date": "2026-01-28", "amount": 3.85, "yield": 0 },
+    { "date": "2026-01-29", "amount": 3.64, "yield": 0 }
     
 ]
