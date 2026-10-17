@@ -988,8 +988,8 @@ function calculateBTCReturns(data) {
 
 
 
-
-        function updateChartGridAster() {
+		
+        function updateChart5() {
             loadingDiv.style.display = 'block';
             errorDiv.style.display = 'none';
 
@@ -1013,21 +1013,16 @@ function calculateBTCReturns(data) {
                     const yields = data.map(item => Number(item.yield.toFixed(2)));
                     const yieldPercentages = data.map(item => 
                         item.amount !== 0 ? (item.yield).toFixed(2) : "0.00"
-                    );
-                    
-                    const totalYields = [];
-                    let cumulativeYield = 0;
-                    data.forEach(item => {
-                        cumulativeYield = cumulativeYield + Number(item.yield);
-                        totalYields.push(Number(cumulativeYield.toFixed(2)));
-                    });
+                    );                    
 
-                    const { thirtyDay, yearly } = calculateEstimatedReturns(data);
-                    const { cta, remark } = getCallToActionAndRemark(thirtyDay, yearly);
+                    const { usd, percentage } = calculateBTCReturns(data);
 
-                    if (!chart) {
-                        const ctx = document.getElementById('financialChart').getContext('2d');
-                        chart = new Chart(ctx, {
+
+                    chart5 = null;	
+
+                    if (!chart5) {
+                        const ctx = document.getElementById('financialChart5').getContext('2d');
+                        chart3 = new Chart(ctx, {
                             type: 'line',
                             data: {
                                 labels: dates,
@@ -1041,7 +1036,7 @@ function calculateBTCReturns(data) {
                                     },
                                     {
                                         label: 'Daily Yield ($)',
-                                        data: totalYields,
+                                        data: 0,
                                         borderColor: 'rgb(255, 99, 132)',
                                         tension: 0.1,
                                         yAxisID: 'y1'
@@ -1058,13 +1053,13 @@ function calculateBTCReturns(data) {
                                 plugins: {
                                     title: {
                                         display: true,
-                                        text: `conservative1(ETH,BTC) - ${year}`,
+                                        text: `cbBTChold (cbBTC) - ${year}/26`,
                                         font: { size: 20, weight: 'bold' },
                                         color: '#2c3e50'
                                     },
                                     subtitle: {
                                         display: true,
-                                        text: `Est. 30-Day Return: ${thirtyDay}% | Est. Yearly Return: ${yearly}%`,
+                                        text: `Revenue:$ ${usd} | growth: ${percentage} %`,
                                         font: { size: 14 },
                                         color: '#7f8c8d',
                                         padding: { top: 5 }
@@ -1136,13 +1131,12 @@ function calculateBTCReturns(data) {
                             }
                         });
                     } else {
-                        chart.data.labels = dates;
-                        chart.data.datasets[0].data = amounts;
-                        chart.data.datasets[1].data = yields;
-                        chart.options.plugins.title.text = `ASTER Grid BOT - ${year}`;
-                        //chart.options.plugins.subtitle.text = `Est. 30-Day Return: ${thirtyDay}% | Est. Yearly Return: ${yearly}%`;
-                        chart.options.plugins.subtitle.text = '';
-                        chart.update();
+                        chart5.data.labels = dates;
+                        chart5.data.datasets[0].data = amounts;
+                        chart5.data.datasets[1].data = yields;
+                        chart5.options.plugins.title.text = `ASTER Grid BOT - ${year}`;
+                        chart5.options.plugins.subtitle.text = '';
+                        chart5.update();
                     }
 
                     lastUpdatedDiv.textContent = `Last updated: ${new Date().toLocaleTimeString()} - Data points: ${data.length}`;
@@ -1151,10 +1145,9 @@ function calculateBTCReturns(data) {
                     remarkDiv.textContent = remark;
                     console.log('Data loaded:', data);
                     console.log('Yield Percentages:', yieldPercentages);
-                    console.log('Estimated 30-Day Return:', thirtyDay + '%');
-                    console.log('Estimated Yearly Return:', yearly + '%');
-                    console.log('CTA:', cta);
-                    console.log('Remark:', remark);
+                    console.log('Revenue:', usd + '$');
+                    
+                    
                 })
                 .catch(error => {
                     loadingDiv.style.display = 'none';
@@ -1167,13 +1160,16 @@ function calculateBTCReturns(data) {
 		
 
 
+ 
+
+
 
         // Initial load only (no interval)
         updateChart();
         updateChart2();
         updateChart3();
         updateChart5();
-		updateChartGridAster();
+		updateChartAsterGrid();
 		
     </script>
 </body>
