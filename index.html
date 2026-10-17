@@ -993,7 +993,7 @@ function calculateBTCReturns(data) {
             loadingDiv.style.display = 'block';
             errorDiv.style.display = 'none';
 
-            const url = `https://spartan-blue.vercel.app/btc-grid-aster.json?nocache=${new Date().getTime()}`;
+            const url = `https://spartan-blue.vercel.app/btc-aster-grid.json?nocache=${new Date().getTime()}`;
             fetch(url)
                 .then(response => {
                     if (!response.ok) {
