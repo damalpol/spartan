@@ -989,7 +989,7 @@ function calculateBTCReturns(data) {
 
 
 		
-        function updateChart5() {
+        function updateChartAsterGrid() {
             loadingDiv.style.display = 'block';
             errorDiv.style.display = 'none';
 
@@ -1021,7 +1021,7 @@ function calculateBTCReturns(data) {
                     chart5 = null;	
 
                     if (!chart5) {
-                        const ctx = document.getElementById('financialChart5').getContext('2d');
+                        const ctx = document.getElementById('asterGridChart').getContext('2d');
                         chart3 = new Chart(ctx, {
                             type: 'line',
                             data: {
